@@ -8,14 +8,13 @@ Gene = List[Codon]
 gene_str: str = "ACGTGGCTCTCTAACGTACGTACGTACGGGGTTTATATATACCCTAGGACTCCCTTT"
 
 
-
 def str_to_gene(s: str) -> Gene:
     gene: Gene = []
     for i in range(0, len(s), 3):
         if (i + 2) >= len(s):
             return gene
         # codon: Codon = (Nucleotide[i], Nucleotide[i + 1], Nucleotide[i + 2])
-        codon: Codon = str_to_codon(s[i:i+3])
+        codon: Codon = str_to_codon(s[i : i + 3])
         gene.append(codon)
     return gene
 
@@ -38,6 +37,7 @@ def linear_contains(gene: Gene, key_codon: Codon) -> bool:
         if codon == key_codon:
             return True
     return False
+
 
 def binary_contains(sorted_gene: Gene, key_codon: Codon) -> bool:
     """
@@ -62,4 +62,5 @@ def binary_contains(sorted_gene: Gene, key_codon: Codon) -> bool:
 
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod(verbose=True)

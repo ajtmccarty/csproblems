@@ -7,6 +7,7 @@ def random_key(length: int) -> int:
     tb: bytes = token_bytes(length)
     return int.from_bytes(tb, "big")
 
+
 def encrypt(message: str) -> Tuple[int, int]:
     message_bytes: bytes = message.encode()
     key: int = random_key(len(message_bytes))
@@ -14,9 +15,12 @@ def encrypt(message: str) -> Tuple[int, int]:
     cipher_int: int = message_int ^ key
     return [cipher_int, key]
 
+
 def decrypt(message_int: int, key: int) -> str:
     plaintext_int: int = message_int ^ key
-    plaintext_bytes: bytes = plaintext_int.to_bytes((plaintext_int.bit_length() + 7) // 8, "big")
+    plaintext_bytes: bytes = plaintext_int.to_bytes(
+        (plaintext_int.bit_length() + 7) // 8, "big"
+    )
     return plaintext_bytes.decode()
 
 
