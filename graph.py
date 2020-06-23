@@ -1,6 +1,7 @@
 from typing import Generic, List, TypeVar
 
 from edge import Edge
+from generic_search import bfs, node_to_path
 
 
 V = TypeVar("V")
@@ -110,3 +111,16 @@ if __name__ == "__main__":
     city_graph.add_edge_by_vertices("New York", "Philadelphia")
     city_graph.add_edge_by_vertices("Philadelphia", "Washington")
     print(city_graph)
+
+    start = "Los Angeles"
+    end = "Boston"
+    node = bfs(
+        initial=start,
+        goal_test=lambda x: x == end,
+        successors=city_graph.neighbors_for_vertex,
+    )
+    if node is None:
+        print(f"No path from {start} to {end}")
+    path = node_to_path(node)
+    print(f"Path from {start} to {end}")
+    print(path)
