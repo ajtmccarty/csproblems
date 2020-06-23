@@ -2,9 +2,10 @@ from collections import namedtuple
 from enum import Enum
 from math import sqrt
 import random
+import time
 from typing import Callable, List, NamedTuple, Optional
 
-from generic_search import dfs, bfs, node_to_path
+from generic_search import astar, dfs, bfs, node_to_path
 
 
 class Cell(str, Enum):
@@ -113,11 +114,14 @@ def manhattan_distance(goal: MazeLocation) -> Callable[[MazeLocation], float]:
 
 
 if __name__ == "__main__":
-    m = Maze(num_rows=7, num_columns=10, sparseness=0.3)
+    m = Maze(num_rows=8, num_columns=30, sparseness=0.3)
 
     print("Depth first search solution")
+    start = time.time()
     node = dfs(initial=m.start, goal_test=m.is_goal, successors=m.successors)
+    end = time.time()
     path = node_to_path(node)
+    print(f"Path length: {len(path)}, Time: {end - start}")
     if path:
         m.mark(path)
         print(m)
@@ -127,8 +131,30 @@ if __name__ == "__main__":
 
     m.clear()
     print("Breadth first search solution")
+    start = time.time()
     node = bfs(initial=m.start, goal_test=m.is_goal, successors=m.successors)
+    end = time.time()
     path = node_to_path(node)
+    print(f"Path length: {len(path)}, Time: {end - start}")
+    if path:
+        m.mark(path)
+        print(m)
+    else:
+        print(m)
+        print("Unsolvable")
+
+    m.clear()
+    print("A* search solution")
+    start = time.time()
+    node = astar(
+        initial=m.start,
+        goal_test=m.is_goal,
+        successors=m.successors,
+        heuristic=manhattan_distance(m.goal),
+    )
+    end = time.time()
+    path = node_to_path(node)
+    print(f"Path length: {len(path)}, Time: {end - start}")
     if path:
         m.mark(path)
         print(m)

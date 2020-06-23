@@ -1,9 +1,6 @@
 from collections import deque
 from heapq import heappush, heappop
-from typing import Any, Callable, Deque, Generic, List, Optional, Union
-
-
-StackOrQueue: Union["Stack", "Queue"]
+from typing import Any, Callable, Deque, Dict, Generic, List, Optional, Union
 
 
 class Staque:
@@ -28,8 +25,8 @@ class Stack(Staque):
     def pop(self) -> Any:
         return self._container.pop()
 
-    def __repr__(self) -> str:
-        return repr(self._container)
+    def push(self, item: Any) -> None:
+        return self._container.append(item)
 
 
 class Queue(Staque):
@@ -48,7 +45,7 @@ class PriorityQueue(Staque):
         heappush(self._container, item)
 
     def pop(self) -> Any:
-        heappop(self._container)
+        return heappop(self._container)
 
 
 class Node:
@@ -63,6 +60,9 @@ class Node:
         self.parent: Optional["Node"] = parent
         self.cost: float = cost
         self.heuristic: float = heuristic
+
+    def __repr__(self) -> str:
+        return f"Node state: {self.state}"
 
     def __lt__(self, other: "Node") -> bool:
         return (self.cost + self.heuristic) < (other.cost + other.heuristic)
@@ -80,9 +80,9 @@ def xfs(
     initial: Any, goal_test: Callable, successors: Callable, breadth_first: bool = True
 ) -> Optional[Node]:
     if breadth_first:
-        frontier: StackOrQueue = Queue()
+        frontier: Staque = Queue()
     else:
-        frontier: StackOrQueue = Stack()
+        frontier: Staque = Stack()
     frontier.push(Node(state=initial, parent=None))
     explored: set = set(initial)
 
@@ -96,6 +96,35 @@ def xfs(
                 continue
             explored.add(child)
             frontier.push(Node(state=child, parent=current_node))
+    return None
+
+
+def astar(
+    initial, goal_test: Callable, successors: Callable, heuristic: Callable
+) -> Optional[Node]:
+    frontier: Staque = PriorityQueue()
+    frontier.push(
+        Node(state=initial, parent=None, cost=0.0, heuristic=heuristic(initial))
+    )
+    explored: Dict = {initial: 0.0}
+
+    while not frontier.is_empty:
+        current_node: Node = frontier.pop()
+        current_state = current_node.state
+        if goal_test(current_state):
+            return current_node
+        for child in successors(current_state):
+            new_cost: float = current_node.cost + 1  # assume cost of 1
+            if child not in explored or new_cost < explored[child]:
+                explored[child] = new_cost
+                frontier.push(
+                    Node(
+                        state=child,
+                        parent=current_node,
+                        cost=new_cost,
+                        heuristic=heuristic(child),
+                    )
+                )
     return None
 
 
