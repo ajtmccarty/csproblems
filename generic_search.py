@@ -1,4 +1,4 @@
-from typing import Any, Generic, List, Optional
+from typing import Any, Callable, Generic, List, Optional
 
 
 class Stack:
@@ -7,7 +7,7 @@ class Stack:
 
     @property
     def is_empty(self) -> bool:
-        return bool(self._container)
+        return len(self._container) == 0
 
     def push(self, item: Any) -> None:
         self._container.append(item)
@@ -34,3 +34,33 @@ class Node:
 
     def __lt__(self, other: "Node") -> bool:
         return (self.cost + self.heuristic) < (other.cost + other.heuristic)
+
+
+def dfs(initial, goal_test: Callable, successors: Callable) -> Optional[Node]:
+    frontier: Stack = Stack()
+    frontier.push(Node(state=initial, parent=None))
+    explored: set = set(initial)
+
+    while not frontier.is_empty:
+        current_node: Node = frontier.pop()
+        current_state = current_node.state
+        if goal_test(current_state):
+            return current_node
+        for child in successors(current_state):
+            if child in explored:
+                continue
+            explored.add(child)
+            frontier.push(Node(state=child, parent=current_node))
+    return None
+
+
+def node_to_path(node: Node) -> List:
+    if not node:
+        return []
+    path: List = [node.state]
+    parent: Node = node.parent
+    while parent:
+        path.append(parent.state)
+        parent = parent.parent
+    path.reverse()
+    return path

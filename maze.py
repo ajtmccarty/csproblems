@@ -3,6 +3,8 @@ from enum import Enum
 import random
 from typing import List, NamedTuple, Optional
 
+from generic_search import dfs, node_to_path
+
 
 class Cell(str, Enum):
     BLOCKED = "X"
@@ -67,18 +69,39 @@ class Maze:
             return True
         return False
 
+    def is_goal(self, ml: MazeLocation) -> bool:
+        return self._grid[ml.row][ml.col] == Cell.GOAL
+
     def successors(self, ml: MazeLocation) -> List[MazeLocation]:
-        possibilities = [
+        possibilities = {
             MazeLocation(ml.row - 1, ml.col),
             MazeLocation(ml.row + 1, ml.col),
             MazeLocation(ml.row, ml.col - 1),
             MazeLocation(ml.row, ml.col + 1),
-        ]
+        }
         return [poss for poss in possibilities if self.is_accessible(ml=poss)]
+
+    def mark(self, path: List[MazeLocation]):
+        for ml in path:
+            if ml not in (self.start, self.goal):
+                self._grid[ml.row][ml.col] = Cell.PATH
+
+    def clear(self):
+        for r_ind in range(self.num_rows):
+            for c_ind in range(self.num_columns):
+                the_cell: Cell = self._grid[r_ind][c_ind]
+                if the_cell == Cell.PATH:
+                    the_cell = Cell.EMPTY
 
 
 if __name__ == "__main__":
-    m = Maze()
-    print(m)
-    print(m.successors(MazeLocation(0, 0)))
-    print(m.successors(MazeLocation(9, 9)))
+    m = Maze(num_rows=7, num_columns=10, sparseness=0.3)
+    # print(m)
+    node = dfs(initial=m.start, goal_test=m.is_goal, successors=m.successors)
+    path = node_to_path(node)
+    if path:
+        m.mark(path)
+        print(m)
+    else:
+        print(m)
+        print("Unsolvable")
