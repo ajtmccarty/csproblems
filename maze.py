@@ -3,7 +3,7 @@ from enum import Enum
 import random
 from typing import List, NamedTuple, Optional
 
-from generic_search import dfs, node_to_path
+from generic_search import dfs, bfs, node_to_path
 
 
 class Cell(str, Enum):
@@ -89,15 +89,26 @@ class Maze:
     def clear(self):
         for r_ind in range(self.num_rows):
             for c_ind in range(self.num_columns):
-                the_cell: Cell = self._grid[r_ind][c_ind]
-                if the_cell == Cell.PATH:
-                    the_cell = Cell.EMPTY
+                if self._grid[r_ind][c_ind] == Cell.PATH:
+                    self._grid[r_ind][c_ind] = Cell.EMPTY
 
 
 if __name__ == "__main__":
     m = Maze(num_rows=7, num_columns=10, sparseness=0.3)
-    # print(m)
+
+    print("Depth first search solution")
     node = dfs(initial=m.start, goal_test=m.is_goal, successors=m.successors)
+    path = node_to_path(node)
+    if path:
+        m.mark(path)
+        print(m)
+    else:
+        print(m)
+        print("Unsolvable")
+
+    m.clear()
+    print("Breadth first search solution")
+    node = bfs(initial=m.start, goal_test=m.is_goal, successors=m.successors)
     path = node_to_path(node)
     if path:
         m.mark(path)

@@ -68,8 +68,21 @@ class Node:
         return (self.cost + self.heuristic) < (other.cost + other.heuristic)
 
 
-def dfs(initial, goal_test: Callable, successors: Callable) -> Optional[Node]:
-    frontier: Stack = Stack()
+def dfs(initial: Any, goal_test: Callable, successors: Callable) -> Optional[Node]:
+    return xfs(initial, goal_test, successors, breadth_first=False)
+
+
+def bfs(initial: Any, goal_test: Callable, successors: Callable) -> Optional[Node]:
+    return xfs(initial, goal_test, successors, breadth_first=True)
+
+
+def xfs(
+    initial: Any, goal_test: Callable, successors: Callable, breadth_first: bool = True
+) -> Optional[Node]:
+    if breadth_first:
+        frontier: StackOrQueue = Queue()
+    else:
+        frontier: StackOrQueue = Stack()
     frontier.push(Node(state=initial, parent=None))
     explored: set = set(initial)
 
