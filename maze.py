@@ -1,7 +1,8 @@
 from collections import namedtuple
 from enum import Enum
+from math import sqrt
 import random
-from typing import List, NamedTuple, Optional
+from typing import Callable, List, NamedTuple, Optional
 
 from generic_search import dfs, bfs, node_to_path
 
@@ -91,6 +92,15 @@ class Maze:
             for c_ind in range(self.num_columns):
                 if self._grid[r_ind][c_ind] == Cell.PATH:
                     self._grid[r_ind][c_ind] = Cell.EMPTY
+
+
+def euclidean_distance(goal: MazeLocation) -> Callable[[MazeLocation], float]:
+    def distance(ml: MazeLocation) -> float:
+        xdist: int = ml.col - goal.col
+        ydist: int = ml.row - goal.row
+        return sqrt(xdist ** 2 + ydist ** 2)
+
+    return distance
 
 
 if __name__ == "__main__":
