@@ -1,7 +1,12 @@
-from typing import Any, Callable, Generic, List, Optional
+from collections import deque
+from heapq import heappush, heappop
+from typing import Any, Callable, Deque, Generic, List, Optional, Union
 
 
-class Stack:
+StackOrQueue: Union["Stack", "Queue"]
+
+
+class Staque:
     def __init__(self) -> None:
         self._container: List = []
 
@@ -9,14 +14,41 @@ class Stack:
     def is_empty(self) -> bool:
         return len(self._container) == 0
 
-    def push(self, item: Any) -> None:
-        self._container.append(item)
+    def __repr__(self) -> str:
+        return repr(self._container)
 
+    def push(self, item: Any) -> None:
+        raise NotImplementedError
+
+    def pop(self) -> Any:
+        raise NotImplementedError
+
+
+class Stack(Staque):
     def pop(self) -> Any:
         return self._container.pop()
 
     def __repr__(self) -> str:
         return repr(self._container)
+
+
+class Queue(Staque):
+    def __init__(self) -> None:
+        self._container: Deque = Deque()
+
+    def push(self, item: Any) -> None:
+        self._container.append(item)
+
+    def pop(self) -> Any:
+        return self._container.popleft()
+
+
+class PriorityQueue(Staque):
+    def push(self, item: Any) -> None:
+        heappush(self._container, item)
+
+    def pop(self) -> Any:
+        heappop(self._container)
 
 
 class Node:
