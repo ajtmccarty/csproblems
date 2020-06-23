@@ -103,6 +103,15 @@ def euclidean_distance(goal: MazeLocation) -> Callable[[MazeLocation], float]:
     return distance
 
 
+def manhattan_distance(goal: MazeLocation) -> Callable[[MazeLocation], float]:
+    def distance(ml: MazeLocation) -> float:
+        xdist: int = abs(ml.col - goal.col)
+        ydist: int = abs(ml.row - goal.row)
+        return xdist + ydist
+
+    return distance
+
+
 if __name__ == "__main__":
     m = Maze(num_rows=7, num_columns=10, sparseness=0.3)
 
